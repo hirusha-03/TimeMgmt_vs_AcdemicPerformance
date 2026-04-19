@@ -1,3 +1,5 @@
+#PHASE 1: DATA CLEANSING
+#--------------------------------------------
 
 # Install the tidyverse package if you haven't already:
 install.packages("tidyverse")
@@ -38,4 +40,50 @@ write.csv(clean_data, "E:/ITProject/TPSM/Cleaned_Students_Performance.csv", row.
 # Display the structure of the clean dataset to verify
 glimpse(clean_data)
 str(df)
+
+#DATA PREPROCESSING
+#-------------------------------------------
+
+#Binary Encoding (Converting Yes/No to 1/0)
+
+#define all the columns that contain "Yes" / "No" responses
+yes_no_cols <- c("Has_Scholarship", "Uses_Uni_Transport", "Uses_Smartphone", 
+                 "Has_PC", "Fell_Probation", "Got_Suspension", 
+                 "Attends_Consultancy", "Has_CoCurriculars", 
+                 "Has_Health_Issues", "Has_Disabilities")
+
+# Use dplyr's 'across' function to instantly convert all these columns 
+clean_data <- clean_data %>%
+  mutate(across(all_of(yes_no_cols), ~ ifelse(. == "Yes", 1, 0)))
+
+# Outlier Detection and Handling (Capping)
+clean_data <- clean_data %>%
+  mutate(
+    # If study hours > 15, force it to 15. Otherwise, leave it alone.
+    Study_Hours_Daily = ifelse(Study_Hours_Daily > 15, 15, Study_Hours_Daily),
+    
+    # Cap social media hours at 10
+    Social_Media_Hours = ifelse(Social_Media_Hours > 10, 10, Social_Media_Hours),
+    
+    # Cap skill development hours at 10
+    Skill_Dev_Hours = ifelse(Skill_Dev_Hours > 10, 10, Skill_Dev_Hours)
+  )
+
+
+# Save the FINAL Preprocessed Dataset
+write.csv(clean_data, "E:/ITProject/TPSM/Final_Model_Ready_Performance.csv", row.names = FALSE)
+
+# Check the summary to verify your max hours are capped and Yes/No are now 1/0
+summary(clean_data)
+
+
+str(clean_data)
+
+
+
+
+
+
+
+
 
